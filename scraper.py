@@ -4,25 +4,40 @@ from bs4 import BeautifulSoup
 import requests
 import re
 
-df = pd.read_csv('D:\\akjnm\Documents\Adam\Programming\college_scrape\colleges.csv', header=None, encoding='cp1252')
 scrp_results = []
-headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
 
-for x in df[0][0:10]:
-    searchStr = 'https://www.google.com/search?q=' + str(x).replace(' ','+') + '+enrollment'
-    #searchStr = 'https://www.google.com/search?q=amridge+university+enrollment'
-    response = requests.get(searchStr, headers=headers)
-    soup = BeautifulSoup(response.text, "html.parser")
-    div = soup.find("div", {"class": "BNeawe iBp4i AP7Wnd"})
-    if div is not None:
-        m=re.search(r'">[1-9]',str(div)).span()[0]
-        n=re.search(r'[0-9]<',str(div)).span()[0]
-        scrp_results.append(str(div)[m+2:n+1])
+#searchStr = 'https://datausa.io/api/data?drilldowns=University&measures=Enrollment,Admissions%20Total,Applicants%20Total'
+#enroll_admin = pd.read_json('D:\\akjnm\Documents\Adam\Programming\college_scrape\enroll_admin.json', orient='index')
+coredata = pd.read_csv('D:\\akjnm\Documents\Adam\Programming\college_scrape\enroll_admin.csv')
+engPct= []
+
+#add concentration (by percent degrees) of engineering degrees awarded
+for i in coredata['ID University']:
+    searchStr = 'https://zircon.datausa.io/api/data?University=' + str(i) + '&drilldowns=CIP2&' + \
+        'measures=Completions&Degree=5&Year=2021'
+    df = pd.read_json(searchStr, orient='index')
+    engData = pd.DataFrame(list(df.loc['data']))
+    if df.size > 2:
+        if not engData[engData['CIP2']=='Engineering'].empty:
+            engPct.append(engData[engData['CIP2']=='Engineering']['Completions'] / engData['Completions'].sum())
+        else:
+            engPct.append(0)
     else:
-        scrp_results.append('0')
-    
-df.insert(2,'',scrp_results)
-df.to_csv('D:\\akjnm\Documents\Adam\Programming\college_scrape\college2.csv', header=None)
+        engPct.append(0)
+
+coredata['engPercent']=engPct
+
+coredata.to_csv('D:\\akjnm\Documents\Adam\Programming\college_scrape\ea_eng.csv')
+
+
+#df = pd.read_json('https://zircon.datausa.io/api/data?University=232557&drilldowns=CIP2&measures=Completions&Degree=5&Year=2021', orient='index')
+#libtest = pd.DataFrame(list(df.loc['data']))
+
+
+
+
+
+#df.to_csv('D:\\akjnm\Documents\Adam\Programming\college_scrape\college2.csv', header=None)
 
 
 
