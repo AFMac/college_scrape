@@ -1,10 +1,5 @@
 import pandas as pd
 import numpy as np  
-from bs4 import BeautifulSoup
-import requests
-import re
-
-scrp_results = []
 
 #searchStr = 'https://datausa.io/api/data?drilldowns=University&measures=Enrollment,Admissions%20Total,Applicants%20Total'
 #enroll_admin = pd.read_json('D:\\akjnm\Documents\Adam\Programming\college_scrape\enroll_admin.json', orient='index')
@@ -31,13 +26,9 @@ coredata.to_csv('D:\\akjnm\Documents\Adam\Programming\college_scrape\ea_eng.csv'
 
 
 #df = pd.read_json('https://zircon.datausa.io/api/data?University=232557&drilldowns=CIP2&measures=Completions&Degree=5&Year=2021', orient='index')
-#libtest = pd.DataFrame(list(df.loc['data']))
 
 
 
-
-
-#df.to_csv('D:\\akjnm\Documents\Adam\Programming\college_scrape\college2.csv', header=None)
 
 
 
